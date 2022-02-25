@@ -65,7 +65,7 @@ size_t sudoku::get_random_number(size_t min, size_t max)
 
 bool sudoku::is_solution() const
 {
-	// Kollar om alla rader och kolumner är giltiga
+	// Kollar om alla rader och kolumner Ã¤r giltiga
 	for (size_t r = 0; r < 4; r++)
 		if (!valid_row(r))
 			return false;
@@ -79,7 +79,7 @@ bool sudoku::is_solution() const
 
 bool sudoku::valid_change(unsigned int row, unsigned int col, int value) const
 {
-	// Om värdet redan finns i kolumnen eller raden retunera att det är en ogiltigt förändring
+	// Om vÃ¤rdet redan finns i kolumnen eller raden retunera att det Ã¤r en ogiltigt fÃ¶rÃ¤ndring
 	for (size_t r = 0; r < 4; r++)
 		if (get_value(r, col) == value)
 			return false;
@@ -93,18 +93,32 @@ bool sudoku::valid_change(unsigned int row, unsigned int col, int value) const
 
 bool sudoku::valid_row(unsigned int row) const
 {
+	/* Fel kod
 	int sum = 0;
 	for (size_t c = 0; c < 4; c++)
 		sum += get_value(row, c);
 	return sum == 10; // 1 + 2 + 3 + 4 = 10
+	*/
+	unsigned int valid_flag = 0;
+	for (size_t c = 0; c < 4; c++)
+		if (!is_empty(row, c))
+			valid_flag |= 1 << (get_value(row, c) - 1);
+	return valid_flag == 0b1111;
 }
 
 bool sudoku::valid_column(unsigned int col) const
 {
+	/* Fel kod
 	int sum = 0;
 	for (size_t r = 0; r < 4; r++)
 		sum += get_value(r, col);
 	return sum == 10; // 1 + 2 + 3 + 4 = 10
+	*/
+	unsigned int valid_flag = 0;
+	for (size_t r = 0; r < 4; r++)
+		if (!is_empty(r, col))
+			valid_flag |= 1 << (get_value(r, col) - 1);
+	return valid_flag == 0b1111;
 }
 
 
@@ -112,7 +126,7 @@ bool sudoku::valid_column(unsigned int col) const
 sudoku sudoku::generate_random_problem(float solved_percentage)
 {
 	sudoku problem = generate_random_solution();
-	size_t remove_value_count = 16 - (int)(solved_percentage * 16); // Antal värden att ta bort
+	size_t remove_value_count = 16 - (int)(solved_percentage * 16); // Antal vÃ¤rden att ta bort
 	size_t index = get_random_number(0, 16);
 	while (remove_value_count > 0)
 	{
@@ -140,11 +154,11 @@ sudoku sudoku::generate_random_solution()
 
 
 
-// Genererar giltiga lösningar
+// Genererar giltiga lÃ¶sningar
 bool sudoku::place_random_valid_value_recursively()
 {
 	size_t random_index = get_random_number(0, 16);
-	size_t offset = 0; // Används om det redan finns ett värde på random_index
+	size_t offset = 0; // AnvÃ¤nds om det redan finns ett vÃ¤rde pÃ¥ random_index
 	while (offset < 16)
 	{
 		unsigned int row = get_row(random_index + offset);
@@ -162,11 +176,11 @@ bool sudoku::place_random_valid_value_recursively()
 			{
 				set_value(row, col, value);
 				if (place_random_valid_value_recursively()) // Leta vidare
-					return true; // Hittat en lösning
-				set_value(row, col, 0); // Hittade ingen lösning så återställer värdet
+					return true; // Hittat en lÃ¶sning
+				set_value(row, col, 0); // Hittade ingen lÃ¶sning sÃ¥ Ã¥terstÃ¤ller vÃ¤rdet
 			}
 		}
-		return false; // Finns inget giltigt värde på den här plattsen (row, col)
+		return false; // Finns inget giltigt vÃ¤rde pÃ¥ den hÃ¤r plattsen (row, col)
 	}
 	return is_solution();
 }
